@@ -60,7 +60,7 @@ public class TimelineActivity extends AppCompatActivity {
         rvTweets.setLayoutManager(new LinearLayoutManager(this));
         rvTweets.setAdapter(adapter);
         populateHomeTimeLine();
-        //please help
+        //test
     }
 
     private void populateHomeTimeLine() {
