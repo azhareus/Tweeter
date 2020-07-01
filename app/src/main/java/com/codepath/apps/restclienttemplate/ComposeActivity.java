@@ -3,10 +3,16 @@ package com.codepath.apps.restclienttemplate;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.InputFilter;
+import android.text.TextWatcher;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.TextView;
 import android.widget.Toast;
+
+import com.wafflecopter.charcounttextview.CharCountTextView;
 
 public class ComposeActivity extends AppCompatActivity {
 
@@ -14,6 +20,7 @@ public class ComposeActivity extends AppCompatActivity {
 
     EditText etCompose;
     Button btnTweet;
+    TextView tvCharCount;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -21,6 +28,22 @@ public class ComposeActivity extends AppCompatActivity {
 
         etCompose = findViewById(R.id.etCompose);
         btnTweet = findViewById(R.id.btnTweet);
+
+
+        //create the character limits for the compose editText
+        InputFilter[] filterArray = new InputFilter[1];
+        filterArray[0] = new InputFilter.LengthFilter(MAX_TWEET_LENGTH);
+        etCompose.setFilters(filterArray);
+
+
+        CharCountTextView charCountTextView = (CharCountTextView)findViewById(R.id.tvTextCounter);
+        charCountTextView.setEditText(etCompose);
+        charCountTextView.setCharCountChangedListener(new CharCountTextView.CharCountChangedListener() {
+            @Override
+            public void onCountChanged(int i, boolean b) {
+
+            }
+        });
 
         //Set click listener on button
         btnTweet.setOnClickListener(new View.OnClickListener() {
@@ -41,4 +64,19 @@ public class ComposeActivity extends AppCompatActivity {
         //Make an API call to Twitter to publish the tweet
 
     }
+    /*final TextWatcher mTextEditorWatcher = new TextWatcher() {
+        public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+        }
+
+        public void onTextChanged(CharSequence s, int start, int before, int count) {
+            //This sets a textview to the current length
+            tvCharCount.setText(String.valueOf(s.length()));
+        }
+
+        @Override
+        public void afterTextChanged(Editable editable) {
+            tvCharCount.setText(MAX_TWEET_LENGTH - editable.toString().length() + "/"+MAX_TWEET_LENGTH);
+        }
+    };*/
+
 }
