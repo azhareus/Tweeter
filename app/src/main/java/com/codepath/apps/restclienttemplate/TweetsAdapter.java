@@ -12,6 +12,9 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.resource.bitmap.CenterCrop;
+import com.bumptech.glide.load.resource.bitmap.CircleCrop;
+import com.bumptech.glide.load.resource.bitmap.RoundedCorners;
 import com.codepath.apps.restclienttemplate.models.Tweet;
 
 import java.text.ParseException;
@@ -66,6 +69,7 @@ public class TweetsAdapter extends RecyclerView.Adapter<TweetsAdapter.ViewHolder
         TextView tvScreenName;
         TextView tvName;
         TextView tvTime;
+        ImageView ivTweetImage;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -74,15 +78,44 @@ public class TweetsAdapter extends RecyclerView.Adapter<TweetsAdapter.ViewHolder
             tvScreenName = itemView.findViewById(R.id.tvScreenName);
             tvName = itemView.findViewById(R.id.tvName);
             tvTime = itemView.findViewById(R.id.tvTime);
-
+            ivTweetImage = itemView.findViewById(R.id.ivTweetImage);
         }
 
         public void bind(Tweet tweet) {
             tvBody.setText(tweet.body);
             tvName.setText(tweet.user.name);
             tvScreenName.setText("@"+ tweet.user.screenName);
-            Glide.with(context).load(tweet.user.profileImageUrl).into(ivProfileImage);
+            Glide.with(context)
+                    .load(tweet.user.profileImageUrl)
+                    .transform(new CircleCrop())
+                    .into(ivProfileImage);
             tvTime.setText(" · "+getRelativeTimeAgo(tweet.createdAt));
+            //If there's an image
+            if(tweet.tweetImageUrls.size() > 0){
+                //Set media
+                Glide.with(context)
+                        .load(tweet.tweetImageUrls.get(0))
+                        .transform(new CenterCrop(), new RoundedCorners(30))
+                        .into(ivTweetImage);
+
+                //Recovers visibility on a recycled item after it had been toggled off
+                ivTweetImage.setVisibility(View.VISIBLE);
+            }
+            else{
+                //No image? Hide the view.
+                ivTweetImage.setVisibility(View.GONE);
+            }
+
+
+           /* //show the image for the user if there is an actual image that exists
+            if (tweet.tweetImageUrl==null){
+                 ivTweetImage.setVisibility(View.GONE);
+            }
+            else{
+                ivTweetImage.setVisibility(View.VISIBLE);
+                Glide.with(context).load(tweet.tweetImageUrl).into(ivTweetImage);
+            }
+*/
         }
         // getRelativeTimeAgo("Mon Apr 01 21:16:23 +0000 2014");
         public String getRelativeTimeAgo(String rawJsonDate) {

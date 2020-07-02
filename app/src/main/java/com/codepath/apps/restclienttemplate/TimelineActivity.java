@@ -1,5 +1,6 @@
 package com.codepath.apps.restclienttemplate;
 
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -25,13 +26,16 @@ import okhttp3.Headers;
 
 public class TimelineActivity extends AppCompatActivity {
 
+    public static final String TAG = "TimelineActivity";
+    private final int REQUEST_CODE = 20;
+
     TwitterClient client;
     RecyclerView rvTweets;
     List<Tweet> tweets;
     TweetsAdapter adapter;
     SwipeRefreshLayout swipeContainer;
     EndlessRecyclerViewScrollListener scrollListener;
-    public static final String TAG = "TimelineActivity";
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -93,10 +97,26 @@ public class TimelineActivity extends AppCompatActivity {
             Toast.makeText(this, "Compose!", Toast.LENGTH_SHORT).show();
             //Navigate to the compose activity
             Intent intent = new Intent(this, ComposeActivity.class);
-            startActivity(intent);
+            startActivityForResult(intent, REQUEST_CODE);
             return true;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+
+        if (requestCode ==REQUEST_CODE&&resultCode==RESULT_OK){
+            //Get data from the intent(Tweet)
+            Tweet tweet = data.getParcelableExtra("tweet");
+            //Update the RV with the tweet
+            //Modify data source of tweets
+            tweets.add(0, tweet);
+            //Update the adapter
+            adapter.notifyItemInserted(0);
+            rvTweets.smoothScrollToPosition(0);
+        }
+        super.onActivityResult(requestCode, resultCode, data);
     }
 
     private void loadMoreData() {
@@ -144,7 +164,7 @@ public class TimelineActivity extends AppCompatActivity {
 
             @Override
             public void onFailure(int statusCode, Headers headers, String response, Throwable throwable) {
-                Log.e(TAG, "on failure "+response, throwable);
+                Log.d(TAG, statusCode + ", Failure:" + response + "; Error: " + throwable);
             }
         });
     }
