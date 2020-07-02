@@ -18,6 +18,7 @@ public class Tweet {
     public long id;
     @Transient
     JSONObject entities;
+    //public String source;
 
     public List <String> tweetImageUrls = new ArrayList<>();
     //empty constructor
@@ -28,6 +29,7 @@ public class Tweet {
         tweet.createdAt = jsonObject.getString("created_at");
         tweet.user = User.fromJson(jsonObject.getJSONObject("user"));
         tweet.id = jsonObject.getLong("id");
+        //tweet.source = jsonObject.getString("")
 
         tweet.entities = jsonObject.getJSONObject("entities");
         if(tweet.entities.has("media")){

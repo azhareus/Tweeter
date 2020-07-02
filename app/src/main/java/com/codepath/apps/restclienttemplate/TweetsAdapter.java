@@ -1,6 +1,7 @@
 package com.codepath.apps.restclienttemplate;
 
 import android.content.Context;
+import android.content.Intent;
 import android.text.format.DateUtils;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -17,17 +18,19 @@ import com.bumptech.glide.load.resource.bitmap.CircleCrop;
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners;
 import com.codepath.apps.restclienttemplate.models.Tweet;
 
+import org.parceler.Parcels;
+
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.List;
 import java.util.Locale;
 
-public class TweetsAdapter extends RecyclerView.Adapter<TweetsAdapter.ViewHolder>{
+public class TweetsAdapter extends RecyclerView.Adapter<TweetsAdapter.ViewHolder> {
     Context context;
     List<Tweet> tweets;
 
     //Pass in the context and list of tweets
-    public TweetsAdapter(Context context, List <Tweet> tweets){
+    public TweetsAdapter(Context context, List<Tweet> tweets) {
         this.context = context;
         this.tweets = tweets;
     }
@@ -53,17 +56,21 @@ public class TweetsAdapter extends RecyclerView.Adapter<TweetsAdapter.ViewHolder
     public int getItemCount() {
         return tweets.size();
     }
-    public void clear(){
+
+    public void clear() {
         tweets.clear();
         notifyDataSetChanged();
-    };
-    public void addAll(List<Tweet> tweetList){
+    }
+
+    ;
+
+    public void addAll(List<Tweet> tweetList) {
         tweets.addAll(tweetList);
         notifyDataSetChanged();
     }
 
     //Define a viewholder
-    public class ViewHolder extends RecyclerView.ViewHolder{
+    public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
         ImageView ivProfileImage;
         TextView tvBody;
         TextView tvScreenName;
@@ -79,19 +86,20 @@ public class TweetsAdapter extends RecyclerView.Adapter<TweetsAdapter.ViewHolder
             tvName = itemView.findViewById(R.id.tvName);
             tvTime = itemView.findViewById(R.id.tvTime);
             ivTweetImage = itemView.findViewById(R.id.ivTweetImage);
+            itemView.setOnClickListener(this);
         }
 
         public void bind(Tweet tweet) {
             tvBody.setText(tweet.body);
             tvName.setText(tweet.user.name);
-            tvScreenName.setText("@"+ tweet.user.screenName);
+            tvScreenName.setText("@" + tweet.user.screenName);
             Glide.with(context)
                     .load(tweet.user.profileImageUrl)
                     .transform(new CircleCrop())
                     .into(ivProfileImage);
-            tvTime.setText(" · "+getRelativeTimeAgo(tweet.createdAt));
+            tvTime.setText(" · " + getRelativeTimeAgo(tweet.createdAt));
             //If there's an image
-            if(tweet.tweetImageUrls.size() > 0){
+            if (tweet.tweetImageUrls.size() > 0) {
                 //Set media
                 Glide.with(context)
                         .load(tweet.tweetImageUrls.get(0))
@@ -100,8 +108,7 @@ public class TweetsAdapter extends RecyclerView.Adapter<TweetsAdapter.ViewHolder
 
                 //Recovers visibility on a recycled item after it had been toggled off
                 ivTweetImage.setVisibility(View.VISIBLE);
-            }
-            else{
+            } else {
                 //No image? Hide the view.
                 ivTweetImage.setVisibility(View.GONE);
             }
@@ -117,6 +124,7 @@ public class TweetsAdapter extends RecyclerView.Adapter<TweetsAdapter.ViewHolder
             }
 */
         }
+
         // getRelativeTimeAgo("Mon Apr 01 21:16:23 +0000 2014");
         public String getRelativeTimeAgo(String rawJsonDate) {
             String twitterFormat = "EEE MMM dd HH:mm:ss ZZZZZ yyyy";
@@ -133,6 +141,24 @@ public class TweetsAdapter extends RecyclerView.Adapter<TweetsAdapter.ViewHolder
             }
 
             return relativeDate;
+        }
+
+        @Override
+        public void onClick(View view) {
+            // gets item position
+            int position = getAdapterPosition();
+            // make sure the position is valid, i.e. actually exists in the view
+            if (position != RecyclerView.NO_POSITION) {
+                // get the movie at the position, this won't work if the class is static
+                Tweet tweet = tweets.get(position);
+                // create intent for the new activity
+                Intent intent = new Intent(context, DetailedTweetActivity.class);
+                // serialize the movie using parceler, use its short name as a key
+                intent.putExtra(Tweet.class.getSimpleName(), Parcels.wrap(tweet));
+                // show the activity
+                context.startActivity(intent);
+
+            }
         }
     }
 }
