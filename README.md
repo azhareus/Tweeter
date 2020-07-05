@@ -47,7 +47,7 @@ The following **additional** features are implemented:
 
 Here's a walkthrough of implemented user stories:
 
-<img src='https://media.giphy.com/media/lqdLIfM6Mvx6xoMgAD/giphy-downsized-large.gif' title='Video Walkthrough' width='' alt='Video Walkthrough' />
+<img src='https://github.com/azhareus/Twittah/blob/master/Animated%20GIF-downsized_large.gif' title='Video Walkthrough' width='' alt='Video Walkthrough' />
 
 ## Notes
 
